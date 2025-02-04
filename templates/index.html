@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionare Maker</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Questionare Maker</h1>
+        <form id="upload-form" enctype="multipart/form-data" action="/upload">
+            <table>
+                <tr>
+                    <input type="file" id="pdf-file" name="pdf" accept="application/pdf" required>
+                    <button type="submit">Upload</button>
+                </tr>
+            </table>
+            </form>
+            <p id="upload-status"></p>
+
+            <script>
+            document.getElementById('upload-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                let formData = new FormData();
+                let fileInput = document.getElementById('pdf-file');
+
+                if (fileInput.files.length === 0) {
+                    alert("Please select a PDF file.");
+                    return;
+                }
+
+                formData.append("pdf", fileInput.files[0]);
+
+                try {
+                    let response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    let result = await response.json();
+                    document.getElementById('upload-status').innerText = result.message;
+                } catch (error) {
+                    console.error("Upload failed:", error);
+                    document.getElementById('upload-status').innerText = "Upload failed.";
+                }
+            });
+            </script>
+        <form id="predict-form" method="POST" action="">
+
+            <table>
+                <tr>
+                    <th><label for="api_key">API Key</label></th>
+                    <th><input type="text" id="api_key" name="api_key" required><br></th>
+                </tr>
+                <tr>
+                    <th><label for="topic">Topic</label></th>
+                    <th><input type="text" id="topic" name="topic" required><br></th>
+                </tr>
+                <tr>
+                    <th><label for="num_questions">Number of Questions</label></th>
+                    <th><input type="number" id="num_questions" name="num_questions" required><br></th>
+                </tr>
+            </table>
+
+            <div>
+                <button type="submit">Create Questionare</button>
+            </div>
+        </form>
+        <p id="result"></p>
+    </div>
+    <script src="/static/js/scripts.js"></script>
+</body>
+</html>
